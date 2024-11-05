@@ -1,0 +1,10 @@
+<ivy-module version="2.0">
+  <info organisation="bundledModule" module="intellij.platform.collaborationTools" revision="242.23726.103+804"/>
+  <configurations>
+    <conf name="default" visibility="public"/>
+  </configurations>
+  <publications>
+    <artifact name="/Users/Vikto/.gradle/caches/8.10/transforms/eeabf5280a419ce12731b56483071986/transformed/ideaIU-2024.2.4-win/lib/modules/intellij.platform.collaborationTools.jar" type="jar" conf="default"/>
+  </publications>
+  <dependencies/>
+</ivy-module>

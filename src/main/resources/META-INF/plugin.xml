@@ -1,0 +1,50 @@
+<idea-plugin>
+    <id>xyz.vikkivuk.CStarPlugin</id>
+
+    <name>C* Language Support</name>
+
+    <vendor email="help@wulfco.xyz" url="https://wulfco.xyz">Wulfco</vendor>
+
+    <!-- Description of the plugin displayed on the Plugin Page and IDE Plugin Manager.
+         Simple HTML elements (text formatting, paragraphs, and lists) can be added inside of <![CDATA[ ]]> tag.
+         Guidelines: https://plugins.jetbrains.com/docs/marketplace/plugin-overview-page.html#plugin-description -->
+    <description><![CDATA[
+    <p>Provides C* language support for JetBrains IDEs.</p>
+
+    <h2>Features</h2>
+    <ul>
+      <li>Smart coding assistance for C*, including code completion, formatting, navigation, intentions, refactorings, and more</li>
+      <li>Syntax highlighting and error detection for C* code</li>
+      <li>On-the-fly code analysis with quick-fix suggestions</li>
+      <li>Support for creating and managing C* projects</li>
+      <li>Integrated debugger for debugging C* applications</li>
+      <li>Running and debugging C* tests</li>
+      <li>Option in the <i>Welcome</i> screen to create new C* projects</li>
+    </ul>
+
+    <h2>Getting Started</h2>
+    <p>To begin developing with C* in your IDE, create a new C* project or open an existing C* file. The plugin will provide full language support, including code completion and real-time error checking.</p>
+    <p>For more information, refer to the <a href="https://www.jetbrains.com/help/">documentation</a> for your IDE.</p>
+    ]]></description>
+
+
+    <!-- Product and plugin compatibility requirements.
+         Read more: https://plugins.jetbrains.com/docs/intellij/plugin-compatibility.html -->
+    <depends>com.intellij.modules.platform</depends>
+    <depends>com.intellij.modules.lang</depends>
+    <depends>com.intellij.modules.xml</depends>
+    <depends>com.intellij.java</depends>
+
+    <extensions defaultExtensionNs="com.intellij">
+        <lang.parserDefinition language="CStar" implementationClass="xyz.vikkivuk.cstarplugin.parser.CStarParserDefinition"/>
+        <fileType name="CStar File" extensions="star" language="CStar" implementationClass="xyz.vikkivuk.cstarplugin.file.CStarFileImplementation"/>
+        <lang.syntaxHighlighter language="CStar" implementationClass="xyz.vikkivuk.cstarplugin.grammar.CStarSyntaxHighlighter"/>
+<!--        <completion.contributor language="CStar" implementationClass="xyz.vikkivuk.cstarplugin.grammar.autocomplete.CStarCompletionContributor"/>-->
+        <annotator language="CStar" implementationClass="xyz.vikkivuk.cstarplugin.grammar.CStarAnnotator"/>
+        <colorSettingsPage implementation="xyz.vikkivuk.cstarplugin.CStarColorsAndFontsPage"/>
+        <lang.commenter language="CStar" implementationClass="xyz.vikkivuk.cstarplugin.grammar.CStarCommenter"/>
+
+<!--        <lang.formatter language="CStar" implementationClass="xyz.vikkivuk.cstarplugin.grammar.formatter.CStarFormattingModelBuilder" />-->
+<!--        <codeStyleSettingsProvider implementation="xyz.vikkivuk.cstarplugin.grammar.formatter.CStarLanguageCodeStyleSettingsProvider" />-->
+    </extensions>
+</idea-plugin>

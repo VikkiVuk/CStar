@@ -1,0 +1,154 @@
+{
+  parserClass = "xyz.vikkivuk.cstarplugin.parser.CStarParser"
+  extends = "com.intellij.extapi.psi.ASTWrapperPsiElement"
+  psiClassPrefix = "CStar"
+  psiImplPackage = "xyz.vikkivuk.cstarplugin.psi.impl"
+  psiPackage = "xyz.vikkivuk.cstarplugin.psi"
+  elementTypeHolderClass = "xyz.vikkivuk.cstarplugin.psi.CStarTypes"
+  generatePsi = true
+  elementTypeClass="xyz.vikkivuk.cstarplugin.CStarElementType"
+  tokenTypeClass="xyz.vikkivuk.cstarplugin.CStarTokenType"
+  tokens = [
+    // Keywords
+    AND = "and"
+    ATTEMPT = "attempt"
+    BUMPINGTHAT = "bumpingThat"
+    CASE = "case"
+    EACH = "each"
+    END = "end"
+    FREE = "free"
+    FROM = "from"
+    IN = "in"
+    LIST = "list"
+    LITERAL = "literal"
+    LOCK = "lock"
+    MARCH = "march"
+    NONE = "none"
+    NUM = "num"
+    OOPSIE = "oopsie"
+    PERHAPS = "perhaps"
+    PRINT = "print"
+    SELECT = "select"
+    SEND = "send"
+    SUPPOSE = "suppose"
+    TASK = "task"
+    TO = "to"
+    TRUTH = "truth"
+    WHILST = "whilst"
+    WITH = "with"
+    YES = "yes"
+    NO = "no"
+    KILL = "kill"
+    NEXT = "next"
+
+    // Operators and symbols
+    ASSIGN_OP = "="
+    ARROW = "=>"
+    PLUS = "+"
+    MINUS = "-"
+    MULT = "*"
+    DIV = "/"
+    COMMA = ","
+    LBRACKET = "["
+    RBRACKET = "]"
+    LPAREN = "("
+    RPAREN = ")"
+    LBRACE = "{"
+    RBRACE = "}"
+
+    NEWLINE = 'regexp:\n'
+    INDENT = 'regexp:\t+'
+
+    // Tokens with regex patterns
+    COMMENT = 'regexp:#.*'
+    STRING = 'regexp:\"([^\"\n]|\.)*\"'
+    NUMBER = 'regexp:[0-9]+'
+
+    // Identifier token must be last to give keywords priority
+    IDENTIFIER = 'regexp:[a-zA-Z_][a-zA-Z0-9_]*'
+  ]
+}
+
+starFile ::= statement*
+
+statement ::= assignment
+            | controlFlow
+            | functionDeclaration
+            | functionCallStmt
+            | printStmt
+            | variableSet
+
+variableModifier ::= FREE | LOCK
+assignment ::= variableModifier variableDeclaration ASSIGN_OP expr
+
+variableDeclaration ::= (type IDENTIFIER) | IDENTIFIER { implements="xyz.vikkivuk.cstarplugin.CStarTypedElement" extends="xyz.vikkivuk.cstarplugin.CStarVariableDeclarationMixin" }
+variableReference ::= IDENTIFIER { methods=[getReference] implements="xyz.vikkivuk.cstarplugin.CStarReferenceElement" extends="xyz.vikkivuk.cstarplugin.CStarVariableReferenceMixin" }
+variableSet ::= variableReference ASSIGN_OP expr
+
+controlFlow ::= supposeStmt | whilstStmt | caseStmt | eachStmt | marchStmt | tryCatchStmt { pin=1 }
+
+supposeStmt ::= (SUPPOSE truthExpr ARROW block (PERHAPS truthExpr ARROW block)* (BUMPINGTHAT ARROW block)? END) | (SUPPOSE truthExpr ARROW statement)
+
+whilstStmt ::= WHILST truthExpr ARROW block END
+
+caseStmt ::= SELECT expr ARROW caseBranch+ END
+caseBranch ::= CASE expr ARROW block
+
+eachStmt ::= EACH variableDeclaration IN (listLiteral | table | variableReference[list]) ARROW block END
+
+marchStmt ::= MARCH variableDeclaration FROM (NUMBER | variableReference[num]) TO (NUMBER | variableReference[num]) ARROW block END
+
+tryCatchStmt ::= ATTEMPT ARROW block catchBlocks END
+catchBlocks ::= OOPSIE ARROW block
+
+functionDeclaration ::= TASK functionVariableDeclaration (WITH parameterList)? ARROW block END { pin=1 }
+functionVariableDeclaration ::= IDENTIFIER
+
+parameterList ::= parameter ((COMMA | AND) parameter)*
+parameter ::= variableDeclaration | (type LPAREN variableDeclaration RPAREN)
+
+functionCallStmt ::= functionCall
+
+functionCall ::= functionReference ((LPAREN exprList? RPAREN) | exprList) { methods=[getReference] implements="xyz.vikkivuk.cstarplugin.CStarReferenceElement" extends="xyz.vikkivuk.cstarplugin.CStarVariableReferenceMixin" }
+functionReference ::= IDENTIFIER { methods=[getReference] implements="xyz.vikkivuk.cstarplugin.CStarReferenceElement" extends="xyz.vikkivuk.cstarplugin.CStarVariableReferenceMixin" }
+
+printStmt ::= PRINT expr
+
+block ::= (statement NEWLINE?)+
+
+expr ::= concatExpr { implements="xyz.vikkivuk.cstarplugin.CStarTypedElement" extends="xyz.vikkivuk.cstarplugin.CStarExprMixin" }
+
+truthExpr ::= comparisonExpr ((AND | OR) comparisonExpr)*
+comparisonOp ::= EQ | NEQ | GT | LT | GTE | LTE
+comparisonExpr ::= expr (comparisonOp expr)*
+
+concatExpr ::= addExpr (AND addExpr)*
+
+addExpr ::= mulExpr ((PLUS | MINUS) mulExpr)*
+
+mulExpr ::= primary ((MULT | DIV) primary)*
+
+primary ::= functionCall
+          | variableReference
+          | STRING
+          | NUMBER
+          | YES
+          | NO
+          | NONE
+          | LPAREN expr RPAREN
+          | listLiteral
+          | table
+
+
+basicPrimary ::= STRING
+                | NUMBER
+                | IDENTIFIER
+
+listLiteral ::= LBRACKET exprList? RBRACKET
+
+table ::= LBRACE tabularExprList? RBRACE
+tabularExprList ::= basicPrimary ASSIGN_OP expr ((COMMA | AND) basicPrimary ASSIGN_OP expr)*
+
+exprList ::= expr ((COMMA | AND) expr)*
+
+type ::= NUM | LITERAL | TRUTH | LIST | TABLE
