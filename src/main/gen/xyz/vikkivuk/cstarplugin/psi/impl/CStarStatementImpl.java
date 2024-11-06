@@ -53,8 +53,20 @@ public class CStarStatementImpl extends ASTWrapperPsiElement implements CStarSta
 
   @Override
   @Nullable
+  public CStarInputStmt getInputStmt() {
+    return findChildByClass(CStarInputStmt.class);
+  }
+
+  @Override
+  @Nullable
   public CStarPrintStmt getPrintStmt() {
     return findChildByClass(CStarPrintStmt.class);
+  }
+
+  @Override
+  @Nullable
+  public CStarVariableSet getVariableSet() {
+    return findChildByClass(CStarVariableSet.class);
   }
 
 }

@@ -17,6 +17,10 @@ public class CStarVisitor extends PsiElementVisitor {
     visitPsiElement(o);
   }
 
+  public void visitBasicPrimary(@NotNull CStarBasicPrimary o) {
+    visitPsiElement(o);
+  }
+
   public void visitBlock(@NotNull CStarBlock o) {
     visitPsiElement(o);
   }
@@ -78,6 +82,10 @@ public class CStarVisitor extends PsiElementVisitor {
   }
 
   public void visitFunctionVariableDeclaration(@NotNull CStarFunctionVariableDeclaration o) {
+    visitPsiElement(o);
+  }
+
+  public void visitInputStmt(@NotNull CStarInputStmt o) {
     visitPsiElement(o);
   }
 
@@ -147,6 +155,10 @@ public class CStarVisitor extends PsiElementVisitor {
 
   public void visitVariableReference(@NotNull CStarVariableReference o) {
     visitReferenceElement(o);
+  }
+
+  public void visitVariableSet(@NotNull CStarVariableSet o) {
+    visitPsiElement(o);
   }
 
   public void visitWhilstStmt(@NotNull CStarWhilstStmt o) {

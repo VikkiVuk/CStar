@@ -40,6 +40,8 @@
     NO = "no"
     KILL = "kill"
     NEXT = "next"
+    OR = "or"
+    ASK = "ask"
 
     // Operators and symbols
     ASSIGN_OP = "="
@@ -75,8 +77,9 @@ statement ::= assignment
             | controlFlow
             | functionDeclaration
             | functionCallStmt
-            | printStmt
             | variableSet
+            | inputStmt
+            | printStmt
 
 variableModifier ::= FREE | LOCK
 assignment ::= variableModifier variableDeclaration ASSIGN_OP expr
@@ -112,7 +115,8 @@ functionCallStmt ::= functionCall
 functionCall ::= functionReference ((LPAREN exprList? RPAREN) | exprList) { methods=[getReference] implements="xyz.vikkivuk.cstarplugin.CStarReferenceElement" extends="xyz.vikkivuk.cstarplugin.CStarVariableReferenceMixin" }
 functionReference ::= IDENTIFIER { methods=[getReference] implements="xyz.vikkivuk.cstarplugin.CStarReferenceElement" extends="xyz.vikkivuk.cstarplugin.CStarVariableReferenceMixin" }
 
-printStmt ::= PRINT expr
+printStmt ::= PRINT ((LPAREN expr RPAREN) | expr)
+inputStmt ::= ASK ((LPAREN expr RPAREN) | expr)
 
 block ::= (statement NEWLINE?)+
 
@@ -138,7 +142,7 @@ primary ::= functionCall
           | LPAREN expr RPAREN
           | listLiteral
           | table
-
+          | inputStmt
 
 basicPrimary ::= STRING
                 | NUMBER

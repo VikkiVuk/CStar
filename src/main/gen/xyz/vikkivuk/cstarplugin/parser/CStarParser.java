@@ -94,6 +94,21 @@ public class CStarParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
+  // STRING
+  //                 | NUMBER
+  //                 | IDENTIFIER
+  public static boolean basicPrimary(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "basicPrimary")) return false;
+    boolean r;
+    Marker m = enter_section_(b, l, _NONE_, BASIC_PRIMARY, "<basic primary>");
+    r = consumeToken(b, STRING);
+    if (!r) r = consumeToken(b, NUMBER);
+    if (!r) r = consumeToken(b, IDENTIFIER);
+    exit_section_(b, l, m, r, false, null);
+    return r;
+  }
+
+  /* ********************************************************** */
   // (statement NEWLINE?)+
   public static boolean block(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "block")) return false;
@@ -504,6 +519,42 @@ public class CStarParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
+  // ASK ((LPAREN expr RPAREN) | expr)
+  public static boolean inputStmt(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "inputStmt")) return false;
+    if (!nextTokenIs(b, ASK)) return false;
+    boolean r;
+    Marker m = enter_section_(b);
+    r = consumeToken(b, ASK);
+    r = r && inputStmt_1(b, l + 1);
+    exit_section_(b, m, INPUT_STMT, r);
+    return r;
+  }
+
+  // (LPAREN expr RPAREN) | expr
+  private static boolean inputStmt_1(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "inputStmt_1")) return false;
+    boolean r;
+    Marker m = enter_section_(b);
+    r = inputStmt_1_0(b, l + 1);
+    if (!r) r = expr(b, l + 1);
+    exit_section_(b, m, null, r);
+    return r;
+  }
+
+  // LPAREN expr RPAREN
+  private static boolean inputStmt_1_0(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "inputStmt_1_0")) return false;
+    boolean r;
+    Marker m = enter_section_(b);
+    r = consumeToken(b, LPAREN);
+    r = r && expr(b, l + 1);
+    r = r && consumeToken(b, RPAREN);
+    exit_section_(b, m, null, r);
+    return r;
+  }
+
+  /* ********************************************************** */
   // LBRACKET exprList? RBRACKET
   public static boolean listLiteral(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "listLiteral")) return false;
@@ -724,6 +775,7 @@ public class CStarParser implements PsiParser, LightPsiParser {
   //           | LPAREN expr RPAREN
   //           | listLiteral
   //           | table
+  //           | inputStmt
   public static boolean primary(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "primary")) return false;
     boolean r;
@@ -738,6 +790,7 @@ public class CStarParser implements PsiParser, LightPsiParser {
     if (!r) r = primary_7(b, l + 1);
     if (!r) r = listLiteral(b, l + 1);
     if (!r) r = table(b, l + 1);
+    if (!r) r = inputStmt(b, l + 1);
     exit_section_(b, l, m, r, false, null);
     return r;
   }
@@ -755,15 +808,38 @@ public class CStarParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // PRINT expr
+  // PRINT ((LPAREN expr RPAREN) | expr)
   public static boolean printStmt(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "printStmt")) return false;
     if (!nextTokenIs(b, PRINT)) return false;
     boolean r;
     Marker m = enter_section_(b);
     r = consumeToken(b, PRINT);
-    r = r && expr(b, l + 1);
+    r = r && printStmt_1(b, l + 1);
     exit_section_(b, m, PRINT_STMT, r);
+    return r;
+  }
+
+  // (LPAREN expr RPAREN) | expr
+  private static boolean printStmt_1(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "printStmt_1")) return false;
+    boolean r;
+    Marker m = enter_section_(b);
+    r = printStmt_1_0(b, l + 1);
+    if (!r) r = expr(b, l + 1);
+    exit_section_(b, m, null, r);
+    return r;
+  }
+
+  // LPAREN expr RPAREN
+  private static boolean printStmt_1_0(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "printStmt_1_0")) return false;
+    boolean r;
+    Marker m = enter_section_(b);
+    r = consumeToken(b, LPAREN);
+    r = r && expr(b, l + 1);
+    r = r && consumeToken(b, RPAREN);
+    exit_section_(b, m, null, r);
     return r;
   }
 
@@ -784,6 +860,8 @@ public class CStarParser implements PsiParser, LightPsiParser {
   //             | controlFlow
   //             | functionDeclaration
   //             | functionCallStmt
+  //             | variableSet
+  //             | inputStmt
   //             | printStmt
   public static boolean statement(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "statement")) return false;
@@ -793,43 +871,56 @@ public class CStarParser implements PsiParser, LightPsiParser {
     if (!r) r = controlFlow(b, l + 1);
     if (!r) r = functionDeclaration(b, l + 1);
     if (!r) r = functionCallStmt(b, l + 1);
+    if (!r) r = variableSet(b, l + 1);
+    if (!r) r = inputStmt(b, l + 1);
     if (!r) r = printStmt(b, l + 1);
     exit_section_(b, l, m, r, false, null);
     return r;
   }
 
   /* ********************************************************** */
-  // SUPPOSE truthExpr ARROW block (PERHAPS truthExpr ARROW block)* (BUMPINGTHAT ARROW block)? END
+  // (SUPPOSE truthExpr ARROW block (PERHAPS truthExpr ARROW block)* (BUMPINGTHAT ARROW block)? END) | (SUPPOSE truthExpr ARROW statement)
   public static boolean supposeStmt(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "supposeStmt")) return false;
     if (!nextTokenIs(b, SUPPOSE)) return false;
+    boolean r;
+    Marker m = enter_section_(b);
+    r = supposeStmt_0(b, l + 1);
+    if (!r) r = supposeStmt_1(b, l + 1);
+    exit_section_(b, m, SUPPOSE_STMT, r);
+    return r;
+  }
+
+  // SUPPOSE truthExpr ARROW block (PERHAPS truthExpr ARROW block)* (BUMPINGTHAT ARROW block)? END
+  private static boolean supposeStmt_0(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "supposeStmt_0")) return false;
     boolean r;
     Marker m = enter_section_(b);
     r = consumeToken(b, SUPPOSE);
     r = r && truthExpr(b, l + 1);
     r = r && consumeToken(b, ARROW);
     r = r && block(b, l + 1);
-    r = r && supposeStmt_4(b, l + 1);
-    r = r && supposeStmt_5(b, l + 1);
+    r = r && supposeStmt_0_4(b, l + 1);
+    r = r && supposeStmt_0_5(b, l + 1);
     r = r && consumeToken(b, END);
-    exit_section_(b, m, SUPPOSE_STMT, r);
+    exit_section_(b, m, null, r);
     return r;
   }
 
   // (PERHAPS truthExpr ARROW block)*
-  private static boolean supposeStmt_4(PsiBuilder b, int l) {
-    if (!recursion_guard_(b, l, "supposeStmt_4")) return false;
+  private static boolean supposeStmt_0_4(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "supposeStmt_0_4")) return false;
     while (true) {
       int c = current_position_(b);
-      if (!supposeStmt_4_0(b, l + 1)) break;
-      if (!empty_element_parsed_guard_(b, "supposeStmt_4", c)) break;
+      if (!supposeStmt_0_4_0(b, l + 1)) break;
+      if (!empty_element_parsed_guard_(b, "supposeStmt_0_4", c)) break;
     }
     return true;
   }
 
   // PERHAPS truthExpr ARROW block
-  private static boolean supposeStmt_4_0(PsiBuilder b, int l) {
-    if (!recursion_guard_(b, l, "supposeStmt_4_0")) return false;
+  private static boolean supposeStmt_0_4_0(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "supposeStmt_0_4_0")) return false;
     boolean r;
     Marker m = enter_section_(b);
     r = consumeToken(b, PERHAPS);
@@ -841,19 +932,32 @@ public class CStarParser implements PsiParser, LightPsiParser {
   }
 
   // (BUMPINGTHAT ARROW block)?
-  private static boolean supposeStmt_5(PsiBuilder b, int l) {
-    if (!recursion_guard_(b, l, "supposeStmt_5")) return false;
-    supposeStmt_5_0(b, l + 1);
+  private static boolean supposeStmt_0_5(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "supposeStmt_0_5")) return false;
+    supposeStmt_0_5_0(b, l + 1);
     return true;
   }
 
   // BUMPINGTHAT ARROW block
-  private static boolean supposeStmt_5_0(PsiBuilder b, int l) {
-    if (!recursion_guard_(b, l, "supposeStmt_5_0")) return false;
+  private static boolean supposeStmt_0_5_0(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "supposeStmt_0_5_0")) return false;
     boolean r;
     Marker m = enter_section_(b);
     r = consumeTokens(b, 0, BUMPINGTHAT, ARROW);
     r = r && block(b, l + 1);
+    exit_section_(b, m, null, r);
+    return r;
+  }
+
+  // SUPPOSE truthExpr ARROW statement
+  private static boolean supposeStmt_1(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "supposeStmt_1")) return false;
+    boolean r;
+    Marker m = enter_section_(b);
+    r = consumeToken(b, SUPPOSE);
+    r = r && truthExpr(b, l + 1);
+    r = r && consumeToken(b, ARROW);
+    r = r && statement(b, l + 1);
     exit_section_(b, m, null, r);
     return r;
   }
@@ -880,20 +984,20 @@ public class CStarParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // IDENTIFIER ASSIGN_OP expr ((COMMA | AND) IDENTIFIER ASSIGN_OP expr)*
+  // basicPrimary ASSIGN_OP expr ((COMMA | AND) basicPrimary ASSIGN_OP expr)*
   public static boolean tabularExprList(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "tabularExprList")) return false;
-    if (!nextTokenIs(b, IDENTIFIER)) return false;
     boolean r;
-    Marker m = enter_section_(b);
-    r = consumeTokens(b, 0, IDENTIFIER, ASSIGN_OP);
+    Marker m = enter_section_(b, l, _NONE_, TABULAR_EXPR_LIST, "<tabular expr list>");
+    r = basicPrimary(b, l + 1);
+    r = r && consumeToken(b, ASSIGN_OP);
     r = r && expr(b, l + 1);
     r = r && tabularExprList_3(b, l + 1);
-    exit_section_(b, m, TABULAR_EXPR_LIST, r);
+    exit_section_(b, l, m, r, false, null);
     return r;
   }
 
-  // ((COMMA | AND) IDENTIFIER ASSIGN_OP expr)*
+  // ((COMMA | AND) basicPrimary ASSIGN_OP expr)*
   private static boolean tabularExprList_3(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "tabularExprList_3")) return false;
     while (true) {
@@ -904,13 +1008,14 @@ public class CStarParser implements PsiParser, LightPsiParser {
     return true;
   }
 
-  // (COMMA | AND) IDENTIFIER ASSIGN_OP expr
+  // (COMMA | AND) basicPrimary ASSIGN_OP expr
   private static boolean tabularExprList_3_0(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "tabularExprList_3_0")) return false;
     boolean r;
     Marker m = enter_section_(b);
     r = tabularExprList_3_0_0(b, l + 1);
-    r = r && consumeTokens(b, 0, IDENTIFIER, ASSIGN_OP);
+    r = r && basicPrimary(b, l + 1);
+    r = r && consumeToken(b, ASSIGN_OP);
     r = r && expr(b, l + 1);
     exit_section_(b, m, null, r);
     return r;
@@ -1043,6 +1148,20 @@ public class CStarParser implements PsiParser, LightPsiParser {
     Marker m = enter_section_(b);
     r = consumeToken(b, IDENTIFIER);
     exit_section_(b, m, VARIABLE_REFERENCE, r);
+    return r;
+  }
+
+  /* ********************************************************** */
+  // variableReference ASSIGN_OP expr
+  public static boolean variableSet(PsiBuilder b, int l) {
+    if (!recursion_guard_(b, l, "variableSet")) return false;
+    if (!nextTokenIs(b, IDENTIFIER)) return false;
+    boolean r;
+    Marker m = enter_section_(b);
+    r = variableReference(b, l + 1);
+    r = r && consumeToken(b, ASSIGN_OP);
+    r = r && expr(b, l + 1);
+    exit_section_(b, m, VARIABLE_SET, r);
     return r;
   }
 

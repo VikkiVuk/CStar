@@ -29,6 +29,12 @@ public class CStarTabularExprListImpl extends ASTWrapperPsiElement implements CS
 
   @Override
   @NotNull
+  public List<CStarBasicPrimary> getBasicPrimaryList() {
+    return PsiTreeUtil.getChildrenOfTypeAsList(this, CStarBasicPrimary.class);
+  }
+
+  @Override
+  @NotNull
   public List<CStarExpr> getExprList() {
     return PsiTreeUtil.getChildrenOfTypeAsList(this, CStarExpr.class);
   }

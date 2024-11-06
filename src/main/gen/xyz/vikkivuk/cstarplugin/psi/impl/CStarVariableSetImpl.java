@@ -8,17 +8,17 @@ import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiElementVisitor;
 import com.intellij.psi.util.PsiTreeUtil;
 import static xyz.vikkivuk.cstarplugin.psi.CStarTypes.*;
-import xyz.vikkivuk.cstarplugin.CStarVariableDeclarationMixin;
+import com.intellij.extapi.psi.ASTWrapperPsiElement;
 import xyz.vikkivuk.cstarplugin.psi.*;
 
-public class CStarVariableDeclarationImpl extends CStarVariableDeclarationMixin implements CStarVariableDeclaration {
+public class CStarVariableSetImpl extends ASTWrapperPsiElement implements CStarVariableSet {
 
-  public CStarVariableDeclarationImpl(ASTNode node) {
+  public CStarVariableSetImpl(@NotNull ASTNode node) {
     super(node);
   }
 
   public void accept(@NotNull CStarVisitor visitor) {
-    visitor.visitVariableDeclaration(this);
+    visitor.visitVariableSet(this);
   }
 
   @Override
@@ -29,8 +29,14 @@ public class CStarVariableDeclarationImpl extends CStarVariableDeclarationMixin 
 
   @Override
   @NotNull
-  public PsiElement getIdentifier() {
-    return findNotNullChildByType(IDENTIFIER);
+  public CStarExpr getExpr() {
+    return findNotNullChildByClass(CStarExpr.class);
+  }
+
+  @Override
+  @NotNull
+  public CStarVariableReference getVariableReference() {
+    return findNotNullChildByClass(CStarVariableReference.class);
   }
 
 }

@@ -46,6 +46,8 @@ class CStarSyntaxHighlighter : SyntaxHighlighterBase(), EmbeddedTokenHighlighter
             CStarTypes.OOPSIE -> arrayOf(KEYWORD)
             CStarTypes.KILL -> arrayOf(KEYWORD)
             CStarTypes.NEXT -> arrayOf(KEYWORD)
+            CStarTypes.OR -> arrayOf(KEYWORD)
+            CStarTypes.ASK -> arrayOf(KEYWORD)
 
             CStarTypes.YES -> arrayOf(BOOLEAN_KEYWORDS)
             CStarTypes.NO -> arrayOf(BOOLEAN_KEYWORDS)

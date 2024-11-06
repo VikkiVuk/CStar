@@ -5,15 +5,9 @@ import java.util.List;
 import org.jetbrains.annotations.*;
 import com.intellij.psi.PsiElement;
 
-public interface CStarSupposeStmt extends PsiElement {
+public interface CStarInputStmt extends PsiElement {
 
   @NotNull
-  List<CStarBlock> getBlockList();
-
-  @Nullable
-  CStarStatement getStatement();
-
-  @NotNull
-  List<CStarTruthExpr> getTruthExprList();
+  CStarExpr getExpr();
 
 }

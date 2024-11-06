@@ -5,15 +5,15 @@ import java.util.List;
 import org.jetbrains.annotations.*;
 import com.intellij.psi.PsiElement;
 
-public interface CStarSupposeStmt extends PsiElement {
-
-  @NotNull
-  List<CStarBlock> getBlockList();
+public interface CStarBasicPrimary extends PsiElement {
 
   @Nullable
-  CStarStatement getStatement();
+  PsiElement getIdentifier();
 
-  @NotNull
-  List<CStarTruthExpr> getTruthExprList();
+  @Nullable
+  PsiElement getNumber();
+
+  @Nullable
+  PsiElement getString();
 
 }

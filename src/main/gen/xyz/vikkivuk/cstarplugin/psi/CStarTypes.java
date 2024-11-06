@@ -12,6 +12,7 @@ public interface CStarTypes {
 
   IElementType ADD_EXPR = new CStarElementType("ADD_EXPR");
   IElementType ASSIGNMENT = new CStarElementType("ASSIGNMENT");
+  IElementType BASIC_PRIMARY = new CStarElementType("BASIC_PRIMARY");
   IElementType BLOCK = new CStarElementType("BLOCK");
   IElementType CASE_BRANCH = new CStarElementType("CASE_BRANCH");
   IElementType CASE_STMT = new CStarElementType("CASE_STMT");
@@ -28,6 +29,7 @@ public interface CStarTypes {
   IElementType FUNCTION_DECLARATION = new CStarElementType("FUNCTION_DECLARATION");
   IElementType FUNCTION_REFERENCE = new CStarElementType("FUNCTION_REFERENCE");
   IElementType FUNCTION_VARIABLE_DECLARATION = new CStarElementType("FUNCTION_VARIABLE_DECLARATION");
+  IElementType INPUT_STMT = new CStarElementType("INPUT_STMT");
   IElementType LIST_LITERAL = new CStarElementType("LIST_LITERAL");
   IElementType MARCH_STMT = new CStarElementType("MARCH_STMT");
   IElementType MUL_EXPR = new CStarElementType("MUL_EXPR");
@@ -45,10 +47,12 @@ public interface CStarTypes {
   IElementType VARIABLE_DECLARATION = new CStarElementType("VARIABLE_DECLARATION");
   IElementType VARIABLE_MODIFIER = new CStarElementType("VARIABLE_MODIFIER");
   IElementType VARIABLE_REFERENCE = new CStarElementType("VARIABLE_REFERENCE");
+  IElementType VARIABLE_SET = new CStarElementType("VARIABLE_SET");
   IElementType WHILST_STMT = new CStarElementType("WHILST_STMT");
 
   IElementType AND = new CStarTokenType("and");
   IElementType ARROW = new CStarTokenType("=>");
+  IElementType ASK = new CStarTokenType("ask");
   IElementType ASSIGN_OP = new CStarTokenType("=");
   IElementType ATTEMPT = new CStarTokenType("attempt");
   IElementType BUMPINGTHAT = new CStarTokenType("bumpingThat");
@@ -86,7 +90,7 @@ public interface CStarTypes {
   IElementType NUM = new CStarTokenType("num");
   IElementType NUMBER = new CStarTokenType("NUMBER");
   IElementType OOPSIE = new CStarTokenType("oopsie");
-  IElementType OR = new CStarTokenType("OR");
+  IElementType OR = new CStarTokenType("or");
   IElementType PERHAPS = new CStarTokenType("perhaps");
   IElementType PLUS = new CStarTokenType("+");
   IElementType PRINT = new CStarTokenType("print");
@@ -112,6 +116,9 @@ public interface CStarTypes {
       }
       else if (type == ASSIGNMENT) {
         return new CStarAssignmentImpl(node);
+      }
+      else if (type == BASIC_PRIMARY) {
+        return new CStarBasicPrimaryImpl(node);
       }
       else if (type == BLOCK) {
         return new CStarBlockImpl(node);
@@ -160,6 +167,9 @@ public interface CStarTypes {
       }
       else if (type == FUNCTION_VARIABLE_DECLARATION) {
         return new CStarFunctionVariableDeclarationImpl(node);
+      }
+      else if (type == INPUT_STMT) {
+        return new CStarInputStmtImpl(node);
       }
       else if (type == LIST_LITERAL) {
         return new CStarListLiteralImpl(node);
@@ -211,6 +221,9 @@ public interface CStarTypes {
       }
       else if (type == VARIABLE_REFERENCE) {
         return new CStarVariableReferenceImpl(node);
+      }
+      else if (type == VARIABLE_SET) {
+        return new CStarVariableSetImpl(node);
       }
       else if (type == WHILST_STMT) {
         return new CStarWhilstStmtImpl(node);

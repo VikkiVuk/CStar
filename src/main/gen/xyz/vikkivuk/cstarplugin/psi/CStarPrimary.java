@@ -14,6 +14,9 @@ public interface CStarPrimary extends PsiElement {
   CStarFunctionCall getFunctionCall();
 
   @Nullable
+  CStarInputStmt getInputStmt();
+
+  @Nullable
   CStarListLiteral getListLiteral();
 
   @Nullable

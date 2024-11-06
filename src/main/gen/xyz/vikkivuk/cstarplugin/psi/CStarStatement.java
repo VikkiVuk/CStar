@@ -20,6 +20,12 @@ public interface CStarStatement extends PsiElement {
   CStarFunctionDeclaration getFunctionDeclaration();
 
   @Nullable
+  CStarInputStmt getInputStmt();
+
+  @Nullable
   CStarPrintStmt getPrintStmt();
+
+  @Nullable
+  CStarVariableSet getVariableSet();
 
 }

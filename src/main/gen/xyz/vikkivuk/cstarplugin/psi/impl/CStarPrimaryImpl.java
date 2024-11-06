@@ -41,6 +41,12 @@ public class CStarPrimaryImpl extends ASTWrapperPsiElement implements CStarPrima
 
   @Override
   @Nullable
+  public CStarInputStmt getInputStmt() {
+    return findChildByClass(CStarInputStmt.class);
+  }
+
+  @Override
+  @Nullable
   public CStarListLiteral getListLiteral() {
     return findChildByClass(CStarListLiteral.class);
   }

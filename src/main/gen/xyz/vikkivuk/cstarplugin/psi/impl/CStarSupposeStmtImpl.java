@@ -34,6 +34,12 @@ public class CStarSupposeStmtImpl extends ASTWrapperPsiElement implements CStarS
   }
 
   @Override
+  @Nullable
+  public CStarStatement getStatement() {
+    return findChildByClass(CStarStatement.class);
+  }
+
+  @Override
   @NotNull
   public List<CStarTruthExpr> getTruthExprList() {
     return PsiTreeUtil.getChildrenOfTypeAsList(this, CStarTruthExpr.class);

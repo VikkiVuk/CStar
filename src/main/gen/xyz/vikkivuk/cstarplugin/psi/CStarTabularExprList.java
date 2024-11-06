@@ -8,6 +8,9 @@ import com.intellij.psi.PsiElement;
 public interface CStarTabularExprList extends PsiElement {
 
   @NotNull
+  List<CStarBasicPrimary> getBasicPrimaryList();
+
+  @NotNull
   List<CStarExpr> getExprList();
 
 }

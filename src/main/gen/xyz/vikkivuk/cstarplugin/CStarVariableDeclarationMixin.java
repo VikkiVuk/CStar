@@ -31,6 +31,7 @@ public abstract class CStarVariableDeclarationMixin extends ASTWrapperPsiElement
         PsiElement typeElement = findChildByType(CStarTypes.TYPE);
         if (typeElement != null) {
             String typeText = typeElement.getText();
+            System.out.println(typeText);
             return switch (typeText) {
                 case "num" -> CStarType.NUM;
                 case "truth" -> CStarType.TRUTH;

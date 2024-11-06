@@ -24,7 +24,7 @@ import com.intellij.lexer.FlexLexer;
 /* Keywords */
 "and"                        { return CStarTypes.AND; }
 "bumpingThat"                { return CStarTypes.BUMPINGTHAT; }
-"case"                       { return CStarTypes.CASE; }
+"when"                       { return CStarTypes.CASE; }
 "each"                       { return CStarTypes.EACH; }
 "end"                        { return CStarTypes.END; }
 "free"                       { return CStarTypes.FREE; }
@@ -51,6 +51,7 @@ import com.intellij.lexer.FlexLexer;
 "kill"                       { return CStarTypes.KILL; }
 "next"                       { return CStarTypes.NEXT; }
 "or"                         { return CStarTypes.OR; }
+"ask"                        { return CStarTypes.ASK; }
 
 /*olean keywords */
 "yes"                        { return CStarTypes.YES; }

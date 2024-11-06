@@ -5,6 +5,7 @@ import com.intellij.lang.ASTNode;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.util.PsiTreeUtil;
 import xyz.vikkivuk.cstarplugin.psi.*;
+import xyz.vikkivuk.cstarplugin.CStarType;
 
 import java.util.ArrayList;
 import java.util.Objects;
@@ -33,14 +34,16 @@ public abstract class CStarExprMixin extends ASTWrapperPsiElement implements CSt
 
                             if (unaryExpr.getListLiteral() == null) {
                                 if (unaryExpr.getTable() == null) {
-                                    if (unaryExpr.getNumber() != null) {
-                                        type.set(CStarType.NUM);
-                                    } else if (unaryExpr.getString() != null) {
-                                        if (unaryExpr.getString().getText().equals("yes") || unaryExpr.getString().getText().equals("no")) {
-                                            type.set(CStarType.TRUTH);
-                                        } else {
+                                    if (unaryExpr.getInputStmt() == null) {
+                                        if (unaryExpr.getNumber() != null) {
+                                            type.set(CStarType.NUM);
+                                        } else if (unaryExpr.getString() != null) {
                                             type.set(CStarType.LITERAL);
+                                        } else if (unaryExpr.getText().equals("yes") || unaryExpr.getText().equals("no")) {
+                                            type.set(CStarType.TRUTH);
                                         }
+                                    } else {
+                                        type.set(CStarType.LITERAL);
                                     }
                                 } else {
                                     type.set(CStarType.TABLE);
@@ -55,40 +58,5 @@ public abstract class CStarExprMixin extends ASTWrapperPsiElement implements CSt
         }
 
         return type.get();
-
-
-//        if (firstChild == null) {
-//            return CStarType.NONE;
-//        }
-//
-//        // Check if it's a number literal
-//        if (firstChild.getNode().getElementType() == CStarTypes.NUMBER) {
-//            return CStarType.NUM;
-//        }
-//
-//        // Check if it's a string literal
-//        else if (firstChild.getNode().getElementType() == CStarTypes.STRING) {
-//            return CStarType.LITERAL;
-//        }
-//
-//        // Check if it's a boolean literal ('yes' or 'no')
-//        else if (firstChild.getNode().getElementType() == CStarTypes.YES || firstChild.getNode().getElementType() == CStarTypes.NO) {
-//            return CStarType.TRUTH;
-//        }
-//
-//        // Check if it's an identifier (variable reference)
-//        else if (firstChild.getNode().getElementType() == CStarTypes.IDENTIFIER) {
-//            // Resolve the reference to find the variable declaration
-//            PsiReference reference = firstChild.getReference();
-//            if (reference != null) {
-//                PsiElement resolved = reference.resolve();
-//                if (resolved instanceof CStarVariableDeclaration) {
-//                    return ((CStarVariableDeclaration) resolved).getType();
-//                }
-//            }
-//        }
-
-        // Handle more complex expressions as needed
-
     }
 }
